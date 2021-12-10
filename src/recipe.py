@@ -1,25 +1,26 @@
+import os
 from ingredient import Ingredient
 
 
-CAESAR_SALAD = ['caesar_salad', 'ceasar_salad', 'caeser_salad', 'ceaser_salad']
+class TextFileRecipeLookup(object):
+    def __init__(self, recipe_dir):
+        self.recipes = {}
+        for filename in os.listdir(recipe_dir):
+            recipe_name = filename.split('.txt')[0]
+            with open('%s\\%s' % (recipe_dir, filename), 'r') as f:
+                recipe_text = f.readline()
+                ingredients = recipe_text.split(',')
+                self.recipes[recipe_name] = []
+                for ingredient_name in ingredients:
+                    self.recipes[recipe_name].append(
+                        Ingredient(ingredient_name)
+                    )
 
-class RecipeLookup(object):
-    def __init__(self):
-        pass
     def get_ingredients(self, name):
-        if name in CAESAR_SALAD:
-            return [
-                Ingredient("Lettuce"),
-                Ingredient("Dill"),
-                Ingredient("Mayonaise"),
-                Ingredient("Anchovies"),
-                Ingredient("Parmesean"),
-                Ingredient("Croutons"),
-                Ingredient("Salt"),
-                Ingredient("Pepper")
-            ]
+        if name not in self.recipes:
+            raise Exception("Cannot find recipe %s" % name)
         else:
-            raise Exception("Unknown recipe %s" % name)
+            return self.recipes[name]
 
 class Recipe(object):
     def __init__(self, recipe_name, lookup):
